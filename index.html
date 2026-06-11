@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Incrível Circo Digital: O Último Ato</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos base para uma experiência cinematográfica */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            overflow: hidden; /* Previne rolagem */
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* O vídeo que fica de fundo e principal */
+        #main-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            object-fit: cover;
+            z-index: 1;
+            transition: filter 1s ease;
+        }
+
+        /* Modo de visualização prévia (borrado e escurecido) */
+        .preview-mode {
+            filter: brightness(0.4) contrast(1.1) saturate(1.2);
+        }
+
+        /* Modo cinema (normal) */
+        .cinema-mode {
+            filter: brightness(1) contrast(1) saturate(1);
+        }
+
+        /* Camada de sobreposição para melhorar a legibilidade do texto e criar a vinheta */
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%), linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 50%);
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding: 5%;
+            transition: opacity 1s ease;
+        }
+
+        /* Título do filme com fonte cinematográfica */
+        h1.movie-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 5vw, 5rem);
+            color: #ffffff;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+            margin-bottom: 1rem;
+            line-height: 1.1;
+            letter-spacing: 2px;
+        }
+
+        /* Botão de assistir */
+        .watch-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #000000;
+            font-weight: 600;
+            font-size: 1.2rem;
+            padding: 15px 35px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .watch-btn:hover {
+            background-color: #ffffff;
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(255, 255, 255, 0.4);
+        }
+
+        .watch-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        /* Esconder elementos quando em modo de exibição */
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Botão de voltar */
+        #back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #back-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+            border-color: white;
+        }
+
+        #back-btn.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Vídeo Principal -->
+    <video id="main-video" class="preview-mode" preload="auto" crossorigin="anonymous">
+        <source src="https://litter.catbox.moe/u3d1h2lt99131nbi.mp4" type="video/mp4">
+        Seu navegador não suporta a tag de vídeo.
+    </video>
+
+    <!-- Overlay com Título e Botão -->
+    <div id="overlay">
+        <div class="max-w-4xl">
+            <h2 class="text-gray-300 text-lg md:text-xl font-light tracking-widest mb-2 uppercase">Lançamento Exclusivo</h2>
+            <h1 class="movie-title">O Incrível Circo Digital:<br>O Último Ato</h1>
+            <p class="text-gray-300 text-sm md:text-base font-light mb-8 max-w-2xl line-clamp-3">
+                Prepare-se para o espetáculo definitivo. As cortinas estão se fechando, e o show final promete revelações que mudarão tudo. Não há mais para onde fugir no picadeiro virtual.
+            </p>
+            
+            <button id="play-button" class="watch-btn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+                Assista agora
+            </button>
+        </div>
+    </div>
+
+    <!-- Botão de Sair/Voltar que aparece durante o vídeo -->
+    <button id="back-btn">
+        &larr; Voltar
+    </button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const video = document.getElementById('main-video');
+            const overlay = document.getElementById('overlay');
+            const playButton = document.getElementById('play-button');
+            const backButton = document.getElementById('back-btn');
+            
+            let isPlayingCinema = false;
+
+            // Função para iniciar a cena aleatória (Preview Mode)
+            const startRandomPreview = () => {
+                if (isPlayingCinema) return;
+                
+                video.muted = true; // Necessário para autoplay em navegadores modernos
+                video.loop = true;
+                video.controls = false;
+                
+                // Escolhe um tempo aleatório entre 10% e 80% do vídeo
+                const duration = video.duration || 60; // fallback de 60s se ainda não carregou
+                const minTime = duration * 0.1;
+                const maxTime = duration * 0.8;
+                const randomTime = Math.random() * (maxTime - minTime) + minTime;
+                
+                if (isFinite(randomTime) && randomTime > 0) {
+                    video.currentTime = randomTime;
+                }
+
+                // Tenta reproduzir (pode ser bloqueado por políticas estritas de autoplay, mas o "muted" geralmente permite)
+                video.play().catch(error => {
+                    console.log("Autoplay de preview prevenido pelo navegador:", error);
+                });
+            };
+
+            // Quando o metadata do vídeo carrega, começamos o preview aleatório
+            video.addEventListener('loadedmetadata', startRandomPreview);
+            
+            // Se o vídeo já estiver cacheado, o evento loadedmetadata pode já ter passado
+            if (video.readyState >= 1) {
+                startRandomPreview();
+            }
+
+            // Função para iniciar o Filme Realmente
+            const startCinematicExperience = () => {
+                isPlayingCinema = true;
+                
+                // Retorna ao começo
+                video.currentTime = 0;
+                video.muted = false; // Ativa o áudio
+                video.loop = false;  // O filme deve parar no final
+                video.controls = true; // Mostra controles de reprodução (barra de tempo, volume)
+                
+                // Muda a classe para retirar o efeito sombrio/borrado
+                video.classList.remove('preview-mode');
+                video.classList.add('cinema-mode');
+
+                // Esconde a interface principal
+                overlay.classList.add('hidden');
+                
+                // Inicia o vídeo
+                video.play();
+
+                // Solicita Tela Cheia (F11 equivalente)
+                const elem = document.documentElement;
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen().catch(err => {
+                        console.log(`Erro ao tentar entrar em tela cheia: ${err.message} (${err.name})`);
+                    });
+                } else if (elem.webkitRequestFullscreen) { /* Safari */
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { /* IE11 */
+                    elem.msRequestFullscreen();
+                }
+
+                // Mostra o botão de voltar após alguns segundos se o mouse se mover
+                let timeout;
+                document.addEventListener('mousemove', () => {
+                    if (isPlayingCinema) {
+                        backButton.classList.add('visible');
+                        clearTimeout(timeout);
+                        timeout = setTimeout(() => {
+                            backButton.classList.remove('visible');
+                        }, 3000);
+                    }
+                });
+            };
+
+            // Ação de clique do botão "Assista agora"
+            playButton.addEventListener('click', startCinematicExperience);
+
+            // Função para voltar ao modo "Preview" (Menu principal)
+            const exitCinematicExperience = () => {
+                isPlayingCinema = false;
+                
+                // Sair da tela cheia se estiver
+                if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement) {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    }
+                }
+
+                // Restaura interface de preview
+                video.controls = false;
+                video.classList.remove('cinema-mode');
+                video.classList.add('preview-mode');
+                overlay.classList.remove('hidden');
+                backButton.classList.remove('visible');
+                
+                // Reinicia a bagunça aleatória
+                startRandomPreview();
+            };
+
+            backButton.addEventListener('click', exitCinematicExperience);
+
+            // Se o usuário sair do fullscreen apertando ESC, você pode querer voltar ao menu (opcional)
+            document.addEventListener('fullscreenchange', () => {
+                if (!document.fullscreenElement && isPlayingCinema) {
+                    // Usuário saiu do modo tela cheia voluntariamente
+                    // Dependendo do gosto, podemos parar o vídeo ou mantê-lo rodando.
+                    // Aqui optamos por voltar ao menu para uma experiência mais coesa.
+                    exitCinematicExperience();
+                }
+            });
+
+            // Quando o filme acaba, volta para o menu
+            video.addEventListener('ended', () => {
+                if (isPlayingCinema) {
+                    exitCinematicExperience();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
