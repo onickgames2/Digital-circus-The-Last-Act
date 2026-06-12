@@ -58,10 +58,11 @@
             min-height: 100%;
             width: auto;
             height: auto;
-            transform: translateX(-50%) translateY(-50%);
+            transform: translate(-50%, -50%);
             object-fit: cover;
             z-index: 1;
-            transition: filter 1.5s ease;
+            /* Animação suave para tudo, incluindo o modo pop-up */
+            transition: filter 1.5s ease, width 1s cubic-bezier(0.25, 1, 0.5, 1), height 1s cubic-bezier(0.25, 1, 0.5, 1), top 1s cubic-bezier(0.25, 1, 0.5, 1), left 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1), border-radius 1s ease;
             pointer-events: none; /* Deixa os cliques passarem para os controlos personalizados */
         }
 
@@ -73,6 +74,21 @@
         /* Modo cinema (normal) */
         .cinema-mode {
             filter: brightness(1) contrast(1) saturate(1) blur(0px);
+        }
+
+        /* ESTILO POP-UP (Mini-player no canto inferior direito) */
+        .video-mini-popup {
+            top: 100% !important;
+            left: 100% !important;
+            transform: translate(calc(-100% - 30px), calc(-100% - 30px)) !important;
+            min-width: 0 !important;
+            min-height: 0 !important;
+            width: 350px !important;
+            height: auto !important;
+            border-radius: 12px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.9);
+            border: 2px solid rgba(255,255,255,0.2);
+            z-index: 50 !important; /* Fica acima de tudo, incluindo o trailer */
         }
 
         /* Camada de sobreposição principal (Menu) */
@@ -130,6 +146,62 @@
             width: 26px;
             height: 26px;
             fill: currentColor;
+        }
+
+        /* =========================================
+           INTERFACE DO TRAILER (O ÚLTIMO GUEST)
+           ========================================= */
+        #trailer-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 40; /* Fica acima da UI do player, mas abaixo do mini-popup */
+            background-color: #000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1s ease, visibility 1s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #trailer-container.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #trailer-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .trailer-overlay-text {
+            position: absolute;
+            bottom: 15%;
+            left: 8%;
+            z-index: 41;
+            pointer-events: none;
+        }
+
+        .trailer-subtitle {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            color: #ff0a16;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .trailer-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 5vw, 4.5rem);
+            color: white;
+            text-shadow: 0 4px 25px rgba(0,0,0,0.9);
+            line-height: 1.1;
         }
 
         /* =========================================
@@ -223,7 +295,7 @@
 
         .progress-bar {
             height: 100%;
-            background: #ff0a16; /* Vermelho estilo Netflix/Cinema */
+            background: #ff0a16;
             border-radius: 3px;
             width: 0%;
             position: relative;
@@ -363,6 +435,17 @@
         O seu navegador não suporta a tag de vídeo.
     </video>
 
+    <!-- Trailer de Pop-up (Escondido inicialmente) -->
+    <div id="trailer-container">
+        <video id="trailer-video" preload="auto" playsinline crossorigin="anonymous">
+            <source src="https://files.catbox.moe/391eip.mp4" type="video/mp4">
+        </video>
+        <div class="trailer-overlay-text">
+            <div class="trailer-subtitle">Estreia em breve</div>
+            <div class="trailer-title">O Último Guest:<br>Reimaginado</div>
+        </div>
+    </div>
+
     <!-- Menu Principal (Sobreposição inicial) -->
     <div id="menu-overlay" class="hidden-element">
         <div class="max-w-5xl">
@@ -444,6 +527,8 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const video = document.getElementById('main-video');
+            const trailerVideo = document.getElementById('trailer-video');
+            const trailerContainer = document.getElementById('trailer-container');
             const loadingScreen = document.getElementById('loading-screen');
             const menuOverlay = document.getElementById('menu-overlay');
             const playButtonMenu = document.getElementById('play-button');
@@ -482,6 +567,52 @@
             let uiTimeout;
             let wasPausedBeforeScrubbing = false;
 
+            // VARIÁVEIS PARA O TRAILER POP-UP
+            let isPlayingTrailer = false;
+            let trailerTriggered = false;
+            let previousMainVolume = 1;
+            const TRAILER_TRIGGER_TIME = 91 * 60 + 7; // 91:07 em segundos (5467)
+
+            // ==========================================
+            // LÓGICA DO TRAILER E POP-UP
+            // ==========================================
+
+            const triggerTrailerEvent = () => {
+                trailerTriggered = true;
+                isPlayingTrailer = true;
+
+                // Esconde a interface de utilizador do player principal
+                playerUI.classList.remove('ui-visible');
+
+                // Encolhe o vídeo principal para o canto inferior direito
+                video.classList.add('video-mini-popup');
+
+                // Diminui o som do vídeo principal para 10%
+                previousMainVolume = video.volume;
+                video.volume = 0.1;
+                updateVolumeUI();
+
+                // Mostra e reproduz o Trailer
+                trailerContainer.classList.add('active');
+                trailerVideo.currentTime = 0;
+                trailerVideo.play().catch(e => console.log("Erro ao reproduzir o trailer", e));
+            };
+
+            // Quando o trailer terminar, volta tudo ao normal
+            trailerVideo.addEventListener('ended', () => {
+                isPlayingTrailer = false;
+                
+                // Esconde o trailer
+                trailerContainer.classList.remove('active');
+                
+                // Volta o vídeo principal ao tamanho normal
+                video.classList.remove('video-mini-popup');
+                
+                // Restaura o volume principal
+                video.volume = previousMainVolume;
+                updateVolumeUI();
+            });
+
             // ==========================================
             // PREVENÇÃO DE ERROS E CARREGAMENTO
             // ==========================================
@@ -505,7 +636,6 @@
                 }
             };
 
-            // Escutamos vários eventos para garantir que o ecrã de loading desaparece assim que possível
             video.addEventListener('loadeddata', unlockUI);
             video.addEventListener('canplay', unlockUI);
 
@@ -514,8 +644,7 @@
                 unlockUI();
             }
 
-            // FALLBACK ABSOLUTO: Força a interface a aparecer após 3 segundos, independentemente do vídeo ter carregado.
-            // Isto garante que o utilizador nunca fica preso num "loop" infinito de loading.
+            // FALLBACK ABSOLUTO: Força a interface a aparecer após 3 segundos
             setTimeout(() => {
                 unlockUI();
             }, 3000);
@@ -538,7 +667,7 @@
             const startRandomPreview = () => {
                 if (isPlayingCinema) return;
                 
-                video.muted = true; // Preview deve ser sempre sem som
+                video.muted = true; 
                 video.loop = true;
                 
                 const duration = video.duration || 60;
@@ -550,7 +679,6 @@
                     video.currentTime = randomTime;
                 }
 
-                // Tenta reproduzir. Se o navegador bloquear, não há problema, ficará num frame estático até o utilizador clicar.
                 video.play().catch(e => console.log("Autoplay de pré-visualização bloqueado pelo navegador", e));
             };
 
@@ -567,11 +695,12 @@
 
             const startCinematicExperience = () => {
                 isPlayingCinema = true;
+                trailerTriggered = false; // Reseta o trailer para caso veja o filme de novo
                 
                 // Configurações do Vídeo para o filme
                 video.currentTime = 0;
-                video.muted = false; // Ativa som
-                video.loop = false;  // Não repete no final
+                video.muted = false; 
+                video.loop = false;  
                 
                 // Transição Visual
                 video.classList.remove('preview-mode');
@@ -582,18 +711,13 @@
                 playerUI.classList.add('active');
                 showUI(); 
                 
-                // Atualiza o tempo total na interface
                 timeTotal.textContent = formatTime(video.duration);
-                
-                // Reseta ícone de volume caso tenha mexido antes
                 updateVolumeUI();
 
-                // Ao clicar no botão, a reprodução tem permissão explícita do utilizador
                 video.play().then(() => {
                     updatePlayPauseUI(false);
                 }).catch(e => console.log("Erro ao reproduzir o vídeo principal", e));
 
-                // Ecrã Cheio
                 toggleFullScreenMode(true);
             };
 
@@ -605,6 +729,14 @@
 
             const exitCinematicExperience = () => {
                 isPlayingCinema = false;
+                
+                // Pára o trailer se estiver a dar
+                if (isPlayingTrailer) {
+                    trailerVideo.pause();
+                    trailerContainer.classList.remove('active');
+                    video.classList.remove('video-mini-popup');
+                    isPlayingTrailer = false;
+                }
                 
                 toggleFullScreenMode(false);
 
@@ -627,34 +759,45 @@
             // CONTROLOS DA INTERFACE PERSONALIZADA
             // ==========================================
 
-            // Lógica de Ocultar/Mostrar UI com o movimento do rato
             const showUI = () => {
-                if(!isPlayingCinema) return;
+                if(!isPlayingCinema || isPlayingTrailer) return; // Não mostra UI se o trailer estiver a dar
+                
                 playerUI.classList.add('ui-visible');
                 document.body.style.cursor = "default";
                 
                 clearTimeout(uiTimeout);
-                // Esconde após 3 segundos inativo
                 uiTimeout = setTimeout(() => {
-                    if (!video.paused) {
+                    if (!video.paused && !isPlayingTrailer) {
                         playerUI.classList.remove('ui-visible');
-                        document.body.style.cursor = "none"; // Esconde o ponteiro para imersão total
+                        document.body.style.cursor = "none";
                     }
                 }, 3000);
             };
 
             document.addEventListener('mousemove', showUI);
-            playerUI.addEventListener('mouseenter', showUI); // Mantém visível se o rato estiver sobre botões
+            playerUI.addEventListener('mouseenter', showUI);
             
             // Play / Pause
             const togglePlayPause = () => {
+                // Se o trailer estiver a dar, pausar/despausar o trailer também
+                if (isPlayingTrailer) {
+                    if (trailerVideo.paused) {
+                        trailerVideo.play();
+                        video.play(); // Mantém o som de fundo do vídeo principal
+                    } else {
+                        trailerVideo.pause();
+                        video.pause();
+                    }
+                    return;
+                }
+
                 if (video.paused) {
                     video.play();
                     updatePlayPauseUI(false);
                 } else {
                     video.pause();
                     updatePlayPauseUI(true);
-                    showUI(); // Mantém UI visível se estiver pausado
+                    showUI(); 
                 }
             };
 
@@ -671,16 +814,20 @@
             btnPlayPause.addEventListener('click', togglePlayPause);
             clickArea.addEventListener('click', togglePlayPause);
 
-            // Atualização de Tempo e Barra de Progresso
+            // Atualização de Tempo e Verificação do Trailer
             video.addEventListener('timeupdate', () => {
                 if (!isPlayingCinema) return;
                 
                 timeCurrent.textContent = formatTime(video.currentTime);
                 
-                // Atualiza a barra vermelha
                 if (video.duration) {
                     const progressPercent = (video.currentTime / video.duration) * 100;
                     progressBar.style.width = `${progressPercent}%`;
+                }
+
+                // CHECK DO TRAILER: Minuto 91:07
+                if (!trailerTriggered && video.currentTime >= TRAILER_TRIGGER_TIME) {
+                    triggerTrailerEvent();
                 }
             });
 
@@ -690,6 +837,7 @@
 
             // Scrubbing (Clicar e arrastar na barra de progresso)
             progressContainer.addEventListener('mousedown', (e) => {
+                if(isPlayingTrailer) return; // Desativa scrubbing durante o trailer
                 wasPausedBeforeScrubbing = video.paused;
                 video.pause();
                 scrubVideo(e);
@@ -701,7 +849,7 @@
             const scrubVideo = (e) => {
                 const rect = progressContainer.getBoundingClientRect();
                 let pos = (e.clientX - rect.left) / rect.width;
-                pos = Math.max(0, Math.min(1, pos)); // Limita entre 0 e 1
+                pos = Math.max(0, Math.min(1, pos)); 
                 
                 video.currentTime = pos * video.duration;
                 progressBar.style.width = `${pos * 100}%`;
@@ -762,18 +910,15 @@
             // Ecrã Cheio (Fullscreen API)
             const toggleFullScreenMode = (forceEnter = null) => {
                 const isFull = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
-                
                 const elem = document.documentElement;
                 
                 if (forceEnter === true || (forceEnter === null && !isFull)) {
-                    // Entrar em ecrã cheio
                     if (elem.requestFullscreen) {
                         elem.requestFullscreen().catch(e => console.log(e));
                     } else if (elem.webkitRequestFullscreen) {
                         elem.webkitRequestFullscreen();
                     }
                 } else if (forceEnter === false || (forceEnter === null && isFull)) {
-                    // Sair de ecrã cheio
                     if (document.exitFullscreen) {
                         document.exitFullscreen().catch(e => console.log(e));
                     } else if (document.webkitExitFullscreen) {
@@ -784,7 +929,6 @@
 
             btnFullscreen.addEventListener('click', () => toggleFullScreenMode(null));
 
-            // Atualiza ícones de ecrã cheio quando o estado muda (por ESC, etc)
             const handleFullscreenChange = () => {
                 const isFull = document.fullscreenElement || document.webkitFullscreenElement;
                 if (isFull) {
@@ -794,8 +938,7 @@
                     iconExitFS.style.display = 'none';
                     iconFS.style.display = 'block';
                     
-                    // Se saiu do ecrã cheio pelo ESC e estava a assistir, volta ao menu principal
-                    if (isPlayingCinema) {
+                    if (isPlayingCinema && !isPlayingTrailer) {
                         exitCinematicExperience();
                     }
                 }
@@ -811,9 +954,9 @@
                 switch(e.key.toLowerCase()) {
                     case ' ':
                     case 'k':
-                        e.preventDefault(); // Evita rolar a página com a barra de espaço
+                        e.preventDefault(); 
                         togglePlayPause();
-                        showUI();
+                        if(!isPlayingTrailer) showUI();
                         break;
                     case 'f':
                         toggleFullScreenMode(null);
@@ -822,12 +965,22 @@
                         btnMute.click();
                         break;
                     case 'arrowright':
-                        video.currentTime = Math.min(video.duration, video.currentTime + 10);
-                        showUI();
+                        if(!isPlayingTrailer) {
+                            video.currentTime = Math.min(video.duration, video.currentTime + 10);
+                            showUI();
+                        }
                         break;
                     case 'arrowleft':
-                        video.currentTime = Math.max(0, video.currentTime - 10);
-                        showUI();
+                        if(!isPlayingTrailer) {
+                            video.currentTime = Math.max(0, video.currentTime - 10);
+                            showUI();
+                        }
+                        break;
+                    case 't': // ATALHO SECRETO PARA TESTAR O TRAILER AGORA
+                        if (!isPlayingTrailer && isPlayingCinema) {
+                            console.log("Atalho Secreto Ativado: A iniciar Trailer!");
+                            triggerTrailerEvent();
+                        }
                         break;
                 }
             });
