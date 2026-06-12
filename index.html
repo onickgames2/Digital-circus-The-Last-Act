@@ -2,7 +2,7 @@
 <html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>O Incrível Circo Digital: O Último Ato</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
@@ -17,6 +17,7 @@
             overflow: hidden; /* Previne rolagem */
             font-family: 'Montserrat', sans-serif;
             color: white;
+            -webkit-tap-highlight-color: transparent; /* Remove o flash azul de toque em dispositivos móveis */
         }
 
         /* Ecrã de Carregamento (Loading) */
@@ -49,34 +50,34 @@
             to { transform: rotate(360deg); }
         }
 
-        /* O vídeo que fica de fundo e principal */
+        /* O vídeo principal que se adapta ao contexto */
         #main-video {
             position: absolute;
             top: 50%;
             left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
+            width: 100%;
+            height: 100%;
             transform: translate(-50%, -50%);
-            object-fit: cover;
             z-index: 1;
-            /* Animação suave para tudo, incluindo o modo pop-up */
-            transition: filter 1.5s ease, width 1s cubic-bezier(0.25, 1, 0.5, 1), height 1s cubic-bezier(0.25, 1, 0.5, 1), top 1s cubic-bezier(0.25, 1, 0.5, 1), left 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1), border-radius 1s ease;
+            background-color: #000000;
+            /* Transição suave para o modo pop-up e para troca de proporção */
+            transition: filter 1.5s ease, width 1s cubic-bezier(0.25, 1, 0.5, 1), height 1s cubic-bezier(0.25, 1, 0.5, 1), top 1s cubic-bezier(0.25, 1, 0.5, 1), left 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1), border-radius 1s ease, border 0.5s ease;
             pointer-events: none; /* Deixa os cliques passarem para os controlos personalizados */
         }
 
-        /* Modo de pré-visualização (desfocado e escurecido) */
+        /* MODO DE ENTRADA PRINCIPAL: Preenche 100% da tela (Visual Imersivo Normal) */
         .preview-mode {
+            object-fit: cover !important;
             filter: brightness(0.3) contrast(1.1) saturate(1.2) blur(2px);
         }
 
-        /* Modo cinema (normal) */
+        /* MODO CINEMA: Mantém a proporção de 16:9 exata com barras pretas (sem cortes) */
         .cinema-mode {
+            object-fit: contain !important;
             filter: brightness(1) contrast(1) saturate(1) blur(0px);
         }
 
-        /* ESTILO POP-UP (Mini-player no canto inferior direito) */
+        /* ESTILO POP-UP (Mini-player no canto inferior direito) - Mantém 16:9 de forma responsiva */
         .video-mini-popup {
             top: 100% !important;
             left: 100% !important;
@@ -84,11 +85,22 @@
             min-width: 0 !important;
             min-height: 0 !important;
             width: 350px !important;
-            height: auto !important;
+            height: calc(350px * 9 / 16) !important; /* Proporção estrita de 16:9 */
             border-radius: 12px;
             box-shadow: 0 15px 50px rgba(0,0,0,0.9);
-            border: 2px solid rgba(255,255,255,0.2);
-            z-index: 50 !important; /* Fica acima de tudo, incluindo o trailer */
+            border: 2px solid rgba(255,255,255,0.3);
+            z-index: 50 !important; /* Fica acima do trailer e da interface do player */
+            object-fit: cover !important; /* Preenchimento perfeito dentro do contorno do mini-player */
+        }
+
+        /* Ajustes responsivos para telemóveis menores no modo pop-up */
+        @media (max-width: 640px) {
+            .video-mini-popup {
+                width: 180px !important;
+                height: calc(180px * 9 / 16) !important;
+                transform: translate(calc(-100% - 15px), calc(-100% - 15px)) !important;
+                border-radius: 8px;
+            }
         }
 
         /* Camada de sobreposição principal (Menu) */
@@ -111,11 +123,11 @@
         /* Título do filme com fonte cinematográfica */
         h1.movie-title {
             font-family: 'Cinzel', serif;
-            font-size: clamp(2.5rem, 6vw, 6rem);
+            font-size: clamp(2.2rem, 6vw, 6rem);
             color: #ffffff;
             text-shadow: 0px 4px 20px rgba(0,0,0,0.9);
             margin-bottom: 1rem;
-            line-height: 1.05;
+            line-height: 1.1;
             letter-spacing: 3px;
         }
 
@@ -175,7 +187,9 @@
         #trailer-video {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* Garante que o trailer exiba em 16:9 estrito no telemóvel */
         }
 
         .trailer-overlay-text {
@@ -188,17 +202,17 @@
 
         .trailer-subtitle {
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.2rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 6px;
+            letter-spacing: 4px;
             color: #ff0a16;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             font-weight: 600;
         }
 
         .trailer-title {
             font-family: 'Cinzel', serif;
-            font-size: clamp(2rem, 5vw, 4.5rem);
+            font-size: clamp(1.8rem, 4vw, 4.5rem);
             color: white;
             text-shadow: 0 4px 25px rgba(0,0,0,0.9);
             line-height: 1.1;
@@ -229,8 +243,8 @@
 
         /* Barra superior (Botão Voltar e Título) */
         .player-top-bar {
-            padding: 30px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            padding: 20px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
             display: flex;
             align-items: center;
             gap: 20px;
@@ -250,24 +264,27 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-family: 'Montserrat', sans-serif;
             opacity: 0.8;
             transition: opacity 0.2s;
         }
         .back-btn:hover { opacity: 1; }
-        .back-btn svg { width: 24px; height: 24px; fill: white; }
+        .back-btn svg { width: 22px; height: 22px; fill: white; }
 
         .player-title {
             font-family: 'Cinzel', serif;
-            font-size: 1.2rem;
+            font-size: 1rem;
             letter-spacing: 1px;
             opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* Barra inferior (Controlos) */
         .player-bottom-bar {
-            padding: 20px 30px;
+            padding: 20px;
             background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
             transform: translateY(100%);
             transition: transform 0.4s ease;
@@ -280,9 +297,9 @@
         /* Barra de Progresso */
         .progress-container {
             width: 100%;
-            height: 6px;
+            height: 8px; /* Mais alto para facilitar o toque no telemóvel */
             background: rgba(255,255,255,0.2);
-            border-radius: 3px;
+            border-radius: 4px;
             cursor: pointer;
             margin-bottom: 15px;
             position: relative;
@@ -296,7 +313,7 @@
         .progress-bar {
             height: 100%;
             background: #ff0a16;
-            border-radius: 3px;
+            border-radius: 4px;
             width: 0%;
             position: relative;
         }
@@ -320,8 +337,8 @@
 
         .progress-buffer {
             height: 100%;
-            background: rgba(255,255,255,0.4);
-            border-radius: 3px;
+            background: rgba(255,255,255,0.35);
+            border-radius: 4px;
             width: 0%;
             position: absolute;
             top: 0;
@@ -339,7 +356,7 @@
         .controls-left, .controls-right {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
         }
 
         .control-btn {
@@ -352,6 +369,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 6px; /* Facilita o toque em telas sensíveis */
         }
         
         .control-btn:hover {
@@ -359,11 +377,11 @@
             transform: scale(1.1);
         }
 
-        .control-btn svg { width: 32px; height: 32px; fill: white; }
-        .control-btn.small svg { width: 24px; height: 24px; }
+        .control-btn svg { width: 28px; height: 28px; fill: white; }
+        .control-btn.small svg { width: 22px; height: 22px; }
 
         .time-display {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 300;
             letter-spacing: 1px;
             opacity: 0.9;
@@ -377,7 +395,7 @@
         }
 
         .volume-slider-bg {
-            width: 80px;
+            width: 70px;
             height: 4px;
             background: rgba(255,255,255,0.2);
             border-radius: 2px;
@@ -402,8 +420,8 @@
         /* Clicar no meio do ecrã pausa/retoma */
         .click-area {
             position: absolute;
-            top: 100px;
-            bottom: 100px;
+            top: 80px;
+            bottom: 80px;
             left: 0;
             right: 0;
             z-index: 15;
@@ -429,7 +447,7 @@
         <p id="error-message">Erro: O vídeo não pôde ser carregado.<br><span class="text-sm text-gray-500">O link expirou ou está quebrado.</span></p>
     </div>
 
-    <!-- Vídeo Principal -->
+    <!-- Vídeo Principal (No menu inicial preenche tudo. No player fica em 16:9 contido) -->
     <video id="main-video" class="preview-mode" preload="auto" playsinline crossorigin="anonymous">
         <source src="https://litter.catbox.moe/u3d1h2lt99131nbi.mp4" type="video/mp4">
         O seu navegador não suporta a tag de vídeo.
@@ -449,9 +467,9 @@
     <!-- Menu Principal (Sobreposição inicial) -->
     <div id="menu-overlay" class="hidden-element">
         <div class="max-w-5xl">
-            <h2 class="text-gray-300 text-lg md:text-xl font-light tracking-widest mb-3 uppercase">Lançamento Exclusivo</h2>
+            <h2 class="text-gray-300 text-sm md:text-xl font-light tracking-widest mb-3 uppercase">Lançamento Exclusivo</h2>
             <h1 class="movie-title">O Incrível Circo Digital:<br>O Último Ato</h1>
-            <p class="text-gray-300 text-base md:text-lg font-light mb-10 max-w-3xl line-clamp-3 leading-relaxed">
+            <p class="text-gray-300 text-sm md:text-lg font-light mb-8 max-w-3xl line-clamp-3 leading-relaxed">
                 Prepare-se para o espetáculo definitivo. As cortinas estão a fechar-se, e o show final promete revelações que mudarão tudo. Não há mais para onde fugir no picadeiro virtual.
             </p>
             
@@ -503,8 +521,8 @@
                 </div>
 
                 <div class="controls-right">
-                    <!-- Volume -->
-                    <div class="volume-container">
+                    <!-- Volume (Escondido em telas muito pequenas para dar espaço aos controles móveis) -->
+                    <div class="volume-container hidden sm:flex">
                         <button class="control-btn small" id="mute-btn">
                             <svg viewBox="0 0 24 24" id="icon-vol-up"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
                             <svg viewBox="0 0 24 24" id="icon-vol-off" style="display:none;"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
@@ -595,6 +613,8 @@
                 // Mostra e reproduz o Trailer
                 trailerContainer.classList.add('active');
                 trailerVideo.currentTime = 0;
+                
+                // Força reprodução no mobile
                 trailerVideo.play().catch(e => console.log("Erro ao reproduzir o trailer", e));
             };
 
@@ -702,7 +722,7 @@
                 video.muted = false; 
                 video.loop = false;  
                 
-                // Transição Visual
+                // Transição Visual (Troca preview-mode por cinema-mode, ativando o formato 16:9 estrito)
                 video.classList.remove('preview-mode');
                 video.classList.add('cinema-mode');
                 menuOverlay.classList.add('hidden-element');
@@ -743,6 +763,8 @@
                 // Esconde UI e Volta ao Menu
                 playerUI.classList.remove('active');
                 playerUI.classList.remove('ui-visible');
+                
+                // Restaura o formato de vídeo preenchendo a tela inteira (cover)
                 video.classList.remove('cinema-mode');
                 video.classList.add('preview-mode');
                 menuOverlay.classList.remove('hidden-element');
@@ -760,7 +782,7 @@
             // ==========================================
 
             const showUI = () => {
-                if(!isPlayingCinema || isPlayingTrailer) return; // Não mostra UI se o trailer estiver a dar
+                if(!isPlayingCinema || isPlayingTrailer) return; // Não mostra UI se o trailer estiver ativo
                 
                 playerUI.classList.add('ui-visible');
                 document.body.style.cursor = "default";
@@ -774,16 +796,18 @@
                 }, 3000);
             };
 
+            // Eventos para mostrar a interface de forma ágil e responsiva
             document.addEventListener('mousemove', showUI);
+            document.addEventListener('touchstart', showUI);
             playerUI.addEventListener('mouseenter', showUI);
             
             // Play / Pause
             const togglePlayPause = () => {
-                // Se o trailer estiver a dar, pausar/despausar o trailer também
+                // Se o trailer estiver ativo, pausa/retoma ambos
                 if (isPlayingTrailer) {
                     if (trailerVideo.paused) {
                         trailerVideo.play();
-                        video.play(); // Mantém o som de fundo do vídeo principal
+                        video.play(); 
                     } else {
                         trailerVideo.pause();
                         video.pause();
@@ -835,34 +859,54 @@
                 timeTotal.textContent = formatTime(video.duration);
             });
 
-            // Scrubbing (Clicar e arrastar na barra de progresso)
-            progressContainer.addEventListener('mousedown', (e) => {
-                if(isPlayingTrailer) return; // Desativa scrubbing durante o trailer
-                wasPausedBeforeScrubbing = video.paused;
-                video.pause();
-                scrubVideo(e);
-                
-                document.addEventListener('mousemove', scrubVideo);
-                document.addEventListener('mouseup', endScrubbing);
-            });
-
-            const scrubVideo = (e) => {
+            // Ajuste do progresso por clique/arrasto (compatível com mouse e touch)
+            const handleScrub = (clientX) => {
                 const rect = progressContainer.getBoundingClientRect();
-                let pos = (e.clientX - rect.left) / rect.width;
+                let pos = (clientX - rect.left) / rect.width;
                 pos = Math.max(0, Math.min(1, pos)); 
                 
                 video.currentTime = pos * video.duration;
                 progressBar.style.width = `${pos * 100}%`;
             };
 
-            const endScrubbing = () => {
-                document.removeEventListener('mousemove', scrubVideo);
-                document.removeEventListener('mouseup', endScrubbing);
-                if (!wasPausedBeforeScrubbing) {
-                    video.play();
-                    updatePlayPauseUI(false);
-                }
-            };
+            progressContainer.addEventListener('mousedown', (e) => {
+                if(isPlayingTrailer) return;
+                wasPausedBeforeScrubbing = video.paused;
+                video.pause();
+                handleScrub(e.clientX);
+                
+                const onMouseMove = (moveEvent) => handleScrub(moveEvent.clientX);
+                const onMouseUp = () => {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                    if (!wasPausedBeforeScrubbing) {
+                        video.play();
+                        updatePlayPauseUI(false);
+                    }
+                };
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+
+            // Suporte para arraste nos dispositivos móveis
+            progressContainer.addEventListener('touchstart', (e) => {
+                if(isPlayingTrailer) return;
+                wasPausedBeforeScrubbing = video.paused;
+                video.pause();
+                handleScrub(e.touches[0].clientX);
+                
+                const onTouchMove = (moveEvent) => handleScrub(moveEvent.touches[0].clientX);
+                const onTouchEnd = () => {
+                    document.removeEventListener('touchmove', onTouchMove);
+                    document.removeEventListener('touchend', onTouchEnd);
+                    if (!wasPausedBeforeScrubbing) {
+                        video.play();
+                        updatePlayPauseUI(false);
+                    }
+                };
+                document.addEventListener('touchmove', onTouchMove);
+                document.addEventListener('touchend', onTouchEnd);
+            });
 
             // Controlo de Volume e Mute
             const updateVolumeUI = () => {
@@ -886,15 +930,9 @@
                 updateVolumeUI();
             });
 
-            volSlider.addEventListener('mousedown', (e) => {
-                changeVolume(e);
-                document.addEventListener('mousemove', changeVolume);
-                document.addEventListener('mouseup', endVolumeChange);
-            });
-
-            const changeVolume = (e) => {
+            const handleVolumeChange = (clientX) => {
                 const rect = volSlider.getBoundingClientRect();
-                let pos = (e.clientX - rect.left) / rect.width;
+                let pos = (clientX - rect.left) / rect.width;
                 pos = Math.max(0, Math.min(1, pos));
                 
                 video.volume = pos;
@@ -902,10 +940,16 @@
                 updateVolumeUI();
             };
 
-            const endVolumeChange = () => {
-                document.removeEventListener('mousemove', changeVolume);
-                document.removeEventListener('mouseup', endVolumeChange);
-            };
+            volSlider.addEventListener('mousedown', (e) => {
+                handleVolumeChange(e.clientX);
+                const onMouseMove = (moveEvent) => handleVolumeChange(moveEvent.clientX);
+                const onMouseUp = () => {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                };
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
 
             // Ecrã Cheio (Fullscreen API)
             const toggleFullScreenMode = (forceEnter = null) => {
@@ -976,9 +1020,9 @@
                             showUI();
                         }
                         break;
-                    case 't': // ATALHO SECRETO PARA TESTAR O TRAILER AGORA
+                    case 't': // ATALHO SECRETO PARA TESTAR O TRAILER IMEDIATAMENTE
                         if (!isPlayingTrailer && isPlayingCinema) {
-                            console.log("Atalho Secreto Ativado: A iniciar Trailer!");
+                            console.log("Atalho Secreto Ativado: A iniciar o trailer!");
                             triggerTrailerEvent();
                         }
                         break;
@@ -992,6 +1036,5 @@
     </script>
 </body>
 </html>
-
 
 
