@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>O Incrível Circo Digital: O Último Ato</title>
+    <title>The Last Guest: Reimagined</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -14,10 +14,10 @@
             width: 100%;
             height: 100%;
             background-color: #000000;
-            overflow: hidden; /* Previne rolagem */
+            overflow: hidden; /* Previne rolagem de página */
             font-family: 'Montserrat', sans-serif;
             color: white;
-            -webkit-tap-highlight-color: transparent; /* Remove o flash azul de toque em dispositivos móveis */
+            -webkit-tap-highlight-color: transparent; /* Remove o reflexo azul de toque em dispositivos móveis */
         }
 
         /* Ecrã de Carregamento (Loading) */
@@ -60,18 +60,18 @@
             transform: translate(-50%, -50%);
             z-index: 1;
             background-color: #000000;
-            /* Transição suave para o modo pop-up e para troca de proporção */
+            /* Transição suave para o modo pop-up e para troca de proporção de ecrã */
             transition: filter 1.5s ease, width 1s cubic-bezier(0.25, 1, 0.5, 1), height 1s cubic-bezier(0.25, 1, 0.5, 1), top 1s cubic-bezier(0.25, 1, 0.5, 1), left 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1), border-radius 1s ease, border 0.5s ease;
             pointer-events: none; /* Deixa os cliques passarem para os controlos personalizados */
         }
 
-        /* MODO DE ENTRADA PRINCIPAL: Preenche 100% da tela (Visual Imersivo Normal) */
+        /* MODO DE ENTRADA PRINCIPAL: Preenche 100% do ecrã (Visual Imersivo Normal) */
         .preview-mode {
             object-fit: cover !important;
             filter: brightness(0.3) contrast(1.1) saturate(1.2) blur(2px);
         }
 
-        /* MODO CINEMA: Mantém a proporção de 16:9 exata com barras pretas (sem cortes) */
+        /* MODO CINEMA: Mantém a proporção de 16:9 exata com barras pretas (sem cortes de imagem) */
         .cinema-mode {
             object-fit: contain !important;
             filter: brightness(1) contrast(1) saturate(1) blur(0px);
@@ -91,16 +91,6 @@
             border: 2px solid rgba(255,255,255,0.3);
             z-index: 50 !important; /* Fica acima do trailer e da interface do player */
             object-fit: cover !important; /* Preenchimento perfeito dentro do contorno do mini-player */
-        }
-
-        /* Ajustes responsivos para telemóveis menores no modo pop-up */
-        @media (max-width: 640px) {
-            .video-mini-popup {
-                width: 180px !important;
-                height: calc(180px * 9 / 16) !important;
-                transform: translate(calc(-100% - 15px), calc(-100% - 15px)) !important;
-                border-radius: 8px;
-            }
         }
 
         /* Camada de sobreposição principal (Menu) */
@@ -189,7 +179,7 @@
             height: 100%;
             max-width: 100%;
             max-height: 100%;
-            object-fit: contain; /* Garante que o trailer exiba em 16:9 estrito no telemóvel */
+            object-fit: contain; /* Garante que o trailer exiba em 16:9 estrito */
         }
 
         .trailer-overlay-text {
@@ -216,6 +206,29 @@
             color: white;
             text-shadow: 0 4px 25px rgba(0,0,0,0.9);
             line-height: 1.1;
+        }
+
+        /* Ajustes responsivos adicionais para telemóveis (Mini player e Texto do Trailer super otimizados) */
+        @media (max-width: 640px) {
+            .video-mini-popup {
+                width: 130px !important; /* Diminuído para ser super discreto no mobile */
+                height: calc(130px * 9 / 16) !important;
+                transform: translate(calc(-100% - 15px), calc(-100% - 15px)) !important;
+                border-radius: 8px;
+                border: 1.5px solid rgba(255,255,255,0.4);
+            }
+            .trailer-subtitle {
+                font-size: 0.65rem !important; /* Texto bem menor e delicado no telemóvel */
+                letter-spacing: 2px !important;
+                margin-bottom: 4px !important;
+            }
+            .trailer-title {
+                font-size: 1.1rem !important; /* Título do trailer super compacto */
+            }
+            .trailer-overlay-text {
+                bottom: 10% !important;
+                left: 6% !important;
+            }
         }
 
         /* =========================================
@@ -369,7 +382,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 6px; /* Facilita o toque em telas sensíveis */
+            padding: 6px; /* Facilita o toque em ecrãs sensíveis */
         }
         
         .control-btn:hover {
@@ -443,19 +456,19 @@
     <!-- Ecrã de Carregamento Inicial -->
     <div id="loading-screen">
         <div class="loader" id="loading-spinner"></div>
-        <p class="text-gray-400 font-light tracking-widest text-sm uppercase" id="loading-text">A Preparar o Espetáculo</p>
-        <p id="error-message">Erro: O vídeo não pôde ser carregado.<br><span class="text-sm text-gray-500">O link expirou ou está quebrado.</span></p>
+        <p class="text-gray-400 font-light tracking-widest text-sm uppercase" id="loading-text">A preparar o espetáculo</p>
+        <p id="error-message">Erro: O vídeo não pôde ser carregado.<br><span class="text-sm text-gray-500">O link expirou ou está inacessível.</span></p>
     </div>
 
-    <!-- Vídeo Principal (No menu inicial preenche tudo. No player fica em 16:9 contido) -->
+    <!-- Vídeo Principal (No menu inicial preenche tudo com cover. No player fica em 16:9 contido) -->
     <video id="main-video" class="preview-mode" preload="auto" playsinline crossorigin="anonymous">
-        <source src="https://litter.catbox.moe/u3d1h2lt99131nbi.mp4" type="video/mp4">
+        <source src="https://files.catbox.moe/4n976b.mp4" type="video/mp4">
         O seu navegador não suporta a tag de vídeo.
     </video>
 
-    <!-- Trailer de Pop-up (Escondido inicialmente) -->
+    <!-- Trailer de Pop-up (Preparado com imagem de capa fornecida pelo utilizador) -->
     <div id="trailer-container">
-        <video id="trailer-video" preload="auto" playsinline crossorigin="anonymous">
+        <video id="trailer-video" preload="auto" playsinline crossorigin="anonymous" poster="https://files.catbox.moe/wdzd5f.jpg">
             <source src="https://files.catbox.moe/391eip.mp4" type="video/mp4">
         </video>
         <div class="trailer-overlay-text">
@@ -464,13 +477,61 @@
         </div>
     </div>
 
+    <!-- POP-UP DE FEEDBACK (Gostou do Filme?) - Animação premium por CSS transform translate -->
+    <div id="feedback-popup" class="fixed bottom-6 right-6 z-[60] bg-black/90 backdrop-blur-lg border border-white/10 p-5 rounded-xl shadow-2xl w-[280px] max-w-[calc(100vw-32px)] transform translate-y-[150%] opacity-0 pointer-events-none transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1)">
+        <!-- Conteúdo de Votação -->
+        <div id="feedback-voting-layout" class="transition-all duration-300">
+            <p class="text-xs font-semibold tracking-wider uppercase text-red-500 mb-1">Diga-nos o que achou</p>
+            <h3 class="text-sm font-bold text-white mb-4">Gostou do filme?</h3>
+            <div class="flex gap-3">
+                <!-- Botão Gostei -->
+                <button id="btn-feedback-like" class="flex-1 flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 active:scale-95 text-white py-2.5 px-3 rounded-lg border border-white/5 transition-all text-xs font-medium">
+                    <svg class="w-4 h-4 fill-current text-white" viewBox="0 0 24 24">
+                        <path d="M2 20h2c.55 0 1-.45 1-1v-9c0-.55-.45-1-1-1H2v11zm20-8c0-.55-.45-1-1-1h-5.03l.76-3.61.02-.22c0-.28-.11-.54-.3-.73l-.73-.72L11 11.41C10.38 12.03 10 12.88 10 13.8V19c0 1.1.9 2 2 2h6.31c.73 0 1.37-.5 1.51-1.22l1.11-5.55c.05-.17.07-.34.07-.52v-1.71z"/>
+                    </svg>
+                    Sim
+                </button>
+                <!-- Botão Não Gostei -->
+                <button id="btn-feedback-dislike" class="flex-1 flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 active:scale-95 text-white py-2.5 px-3 rounded-lg border border-white/5 transition-all text-xs font-medium">
+                    <svg class="w-4 h-4 fill-current text-white" viewBox="0 0 24 24">
+                        <path d="M22 4h-2c-.55 0-1 .45-1 1v9c0 .55.45 1 1 1h2V4zM2 12c0 .55.45 1 1 1h5.03l-.76 3.61-.02.22c0 .28.11.54.3.73l.73.72L13 12.59c.62-.62 1-1.47 1-2.39V5c0-1.1-.9-2-2-2H5.69c-.73 0-1.37.5-1.51 1.22l-1.11 5.55c-.05.17-.07.34-.07.52v1.71z"/>
+                    </svg>
+                    Não
+                </button>
+            </div>
+        </div>
+
+        <!-- Conteúdo de Confirmação (Sucesso) -->
+        <div id="feedback-success-layout" class="hidden flex flex-col items-center justify-center py-2 text-center transition-all duration-300">
+            <svg class="w-10 h-10 text-green-500 mb-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <p class="text-sm font-semibold text-white">Obrigado pelo feedback!</p>
+        </div>
+    </div>
+
     <!-- Menu Principal (Sobreposição inicial) -->
     <div id="menu-overlay" class="hidden-element">
+        
+        <!-- AVISO DE INSTABILIDADE DE FILME (Cinematográfico e Posicionado no topo) -->
+        <div class="absolute top-6 left-6 right-6 z-30 flex items-center justify-center pointer-events-none">
+            <div class="bg-red-950/80 backdrop-blur-md border border-red-500/30 text-red-200 px-4 py-3 rounded-lg shadow-xl flex items-center gap-3 max-w-3xl pointer-events-auto">
+                <svg class="w-5 h-5 text-red-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <p class="text-xs md:text-sm font-light leading-relaxed">
+                    O filme <strong class="font-semibold">O Incrível Circo Digital: O Último Ato</strong> está a sofrer problemas de transmissão, por favor aguarde e tente novamente mais tarde. Apresentamos em caráter temporário o sucesso abaixo.
+                </p>
+            </div>
+        </div>
+
         <div class="max-w-5xl">
-            <h2 class="text-gray-300 text-sm md:text-xl font-light tracking-widest mb-3 uppercase">Lançamento Exclusivo</h2>
-            <h1 class="movie-title">O Incrível Circo Digital:<br>O Último Ato</h1>
+            <h2 class="text-red-500 text-xs md:text-sm font-semibold tracking-widest mb-3 uppercase flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Exibição Temporária Alternativa
+            </h2>
+            <h1 class="movie-title">The Last Guest:<br>Reimagined</h1>
             <p class="text-gray-300 text-sm md:text-lg font-light mb-8 max-w-3xl line-clamp-3 leading-relaxed">
-                Prepare-se para o espetáculo definitivo. As cortinas estão a fechar-se, e o show final promete revelações que mudarão tudo. Não há mais para onde fugir no picadeiro virtual.
+                Um conto heroico sobre sobrevivência, sacrifício e o destino da humanidade perante a tirania dos Bacon Soldiers. Redescubra a lenda do último Guest nesta obra-prima de animação completamente reimaginada.
             </p>
             
             <button id="play-button" class="watch-btn">
@@ -493,7 +554,7 @@
                 <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                 Voltar
             </button>
-            <div class="player-title">O Incrível Circo Digital: O Último Ato</div>
+            <div class="player-title">The Last Guest: Reimagined</div>
         </div>
 
         <!-- Barra Inferior -->
@@ -521,7 +582,7 @@
                 </div>
 
                 <div class="controls-right">
-                    <!-- Volume (Escondido em telas muito pequenas para dar espaço aos controles móveis) -->
+                    <!-- Volume (Escondido em ecrãs muito pequenos para dar espaço aos controlos móveis) -->
                     <div class="volume-container hidden sm:flex">
                         <button class="control-btn small" id="mute-btn">
                             <svg viewBox="0 0 24 24" id="icon-vol-up"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
@@ -581,6 +642,13 @@
             const iconFS = document.getElementById('icon-fullscreen');
             const iconExitFS = document.getElementById('icon-exit-fullscreen');
 
+            // POP-UP DE FEEDBACK
+            const feedbackPopup = document.getElementById('feedback-popup');
+            const feedbackVotingLayout = document.getElementById('feedback-voting-layout');
+            const feedbackSuccessLayout = document.getElementById('feedback-success-layout');
+            const btnFeedbackLike = document.getElementById('btn-feedback-like');
+            const btnFeedbackDislike = document.getElementById('btn-feedback-dislike');
+
             let isPlayingCinema = false;
             let uiTimeout;
             let wasPausedBeforeScrubbing = false;
@@ -589,63 +657,116 @@
             let isPlayingTrailer = false;
             let trailerTriggered = false;
             let previousMainVolume = 1;
-            const TRAILER_TRIGGER_TIME = 91 * 60 + 7; // 91:07 em segundos (5467)
+            const TRAILER_TRIGGER_TIME = 85 * 60 + 19; // GATILHO: 85:19 em segundos (5119)
+
+            // Forçar o carregamento inicial do elemento do trailer
+            trailerVideo.load();
 
             // ==========================================
             // LÓGICA DO TRAILER E POP-UP
             // ==========================================
 
             const triggerTrailerEvent = () => {
+                if (isPlayingTrailer) return;
+                
                 trailerTriggered = true;
                 isPlayingTrailer = true;
+
+                // Esconde o pop-up de feedback se este estiver ativo
+                hideFeedbackWidget();
 
                 // Esconde a interface de utilizador do player principal
                 playerUI.classList.remove('ui-visible');
 
-                // Encolhe o vídeo principal para o canto inferior direito
+                // Transforma o vídeo principal num mini-player flutuante
                 video.classList.add('video-mini-popup');
 
-                // Diminui o som do vídeo principal para 10%
+                // Diminui suavemente o volume do filme para 10%
                 previousMainVolume = video.volume;
                 video.volume = 0.1;
                 updateVolumeUI();
 
-                // Mostra e reproduz o Trailer
+                // Ativa o contentor do trailer
                 trailerContainer.classList.add('active');
                 trailerVideo.currentTime = 0;
                 
-                // Força reprodução no mobile
-                trailerVideo.play().catch(e => console.log("Erro ao reproduzir o trailer", e));
+                // Atribui o som de volta, pois o utilizador já interagiu previamente
+                trailerVideo.muted = false;
+                
+                // Reprodução segura e imediata do trailer
+                const playPromise = trailerVideo.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log("Falha no arranque automático do trailer. Tentando reproduzir sem áudio e ativar som em seguida:", error);
+                        trailerVideo.muted = true;
+                        trailerVideo.play().then(() => {
+                            setTimeout(() => {
+                                trailerVideo.muted = false;
+                            }, 100);
+                        }).catch(e => console.error("Bloqueio absoluto de autoplay do browser:", e));
+                    });
+                }
             };
 
-            // Quando o trailer terminar, volta tudo ao normal
+            // Quando o trailer terminar, restaura o vídeo principal e lança a avaliação
             trailerVideo.addEventListener('ended', () => {
                 isPlayingTrailer = false;
                 
-                // Esconde o trailer
+                // Oculta o ecrã do trailer
                 trailerContainer.classList.remove('active');
                 
-                // Volta o vídeo principal ao tamanho normal
+                // Restaura o formato original de tela inteira
                 video.classList.remove('video-mini-popup');
                 
-                // Restaura o volume principal
+                // Restabelece o volume inicial do utilizador
                 video.volume = previousMainVolume;
                 updateVolumeUI();
+
+                // Lança o painel de avaliação do filme
+                showFeedbackWidget();
             });
+
+            // ==========================================
+            // LÓGICA DE EXIBIÇÃO DO FEEDBACK POP-UP
+            // ==========================================
+
+            const showFeedbackWidget = () => {
+                feedbackVotingLayout.classList.remove('hidden');
+                feedbackSuccessLayout.classList.add('hidden');
+                
+                feedbackPopup.classList.remove('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
+                feedbackPopup.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+            };
+
+            const hideFeedbackWidget = () => {
+                feedbackPopup.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+                feedbackPopup.classList.add('translate-y-[150%]', 'opacity-0', 'pointer-events-none');
+            };
+
+            const handleFeedbackResponse = () => {
+                feedbackVotingLayout.classList.add('hidden');
+                feedbackSuccessLayout.classList.remove('hidden');
+
+                // Fecha automaticamente a caixa após um breve agradecimento
+                setTimeout(() => {
+                    hideFeedbackWidget();
+                }, 2500);
+            };
+
+            btnFeedbackLike.addEventListener('click', handleFeedbackResponse);
+            btnFeedbackDislike.addEventListener('click', handleFeedbackResponse);
 
             // ==========================================
             // PREVENÇÃO DE ERROS E CARREGAMENTO
             // ==========================================
             
-            // Se o link do vídeo estiver quebrado ou offline
             video.addEventListener('error', () => {
                 loadingSpinner.style.display = 'none';
                 loadingText.style.display = 'none';
                 errorMessage.style.display = 'block';
-                console.error("O vídeo não pôde ser carregado. Verifique o link fornecido.");
+                console.error("Não foi possível processar o vídeo principal.");
             });
 
-            // Função robusta para libertar a interface
             const unlockUI = () => {
                 if (!loadingScreen.classList.contains('hidden-element')) {
                     loadingScreen.classList.add('hidden-element');
@@ -659,17 +780,15 @@
             video.addEventListener('loadeddata', unlockUI);
             video.addEventListener('canplay', unlockUI);
 
-            // Verificação imediata caso o vídeo já esteja na cache
             if (video.readyState >= 2) { 
                 unlockUI();
             }
 
-            // FALLBACK ABSOLUTO: Força a interface a aparecer após 3 segundos
+            // Fallback para assegurar que a interface abre após 3 segundos
             setTimeout(() => {
                 unlockUI();
             }, 3000);
 
-            // Atualiza a barra de buffer visualmente
             video.addEventListener('progress', () => {
                 if (video.buffered.length > 0) {
                     const bufferedEnd = video.buffered.end(video.buffered.length - 1);
@@ -699,7 +818,7 @@
                     video.currentTime = randomTime;
                 }
 
-                video.play().catch(e => console.log("Autoplay de pré-visualização bloqueado pelo navegador", e));
+                video.play().catch(e => console.log("Pré-visualização em autoplay contida pelo navegador", e));
             };
 
             const formatTime = (timeInSeconds) => {
@@ -715,28 +834,35 @@
 
             const startCinematicExperience = () => {
                 isPlayingCinema = true;
-                trailerTriggered = false; // Reseta o trailer para caso veja o filme de novo
+                trailerTriggered = false; 
                 
-                // Configurações do Vídeo para o filme
+                // Configuração do vídeo para reprodução estrita
                 video.currentTime = 0;
                 video.muted = false; 
                 video.loop = false;  
                 
-                // Transição Visual (Troca preview-mode por cinema-mode, ativando o formato 16:9 estrito)
+                // Transição visual de proporção (de cover para contain 16:9)
                 video.classList.remove('preview-mode');
                 video.classList.add('cinema-mode');
                 menuOverlay.classList.add('hidden-element');
                 
-                // Mostra UI Personalizada e força barra de controlos aparecer
+                // Ativa a interface de controlo e exibe as barras
                 playerUI.classList.add('active');
                 showUI(); 
                 
                 timeTotal.textContent = formatTime(video.duration);
                 updateVolumeUI();
 
+                // PRIMING: Desbloqueia o trailer silenciosamente usando o gesto de clique atual
+                // para que a reprodução posterior ocorra de forma perfeitamente fluida e com som!
+                trailerVideo.play().then(() => {
+                    trailerVideo.pause();
+                    trailerVideo.muted = false;
+                }).catch(err => console.log("Ativação preliminar do trailer autorizada:", err));
+
                 video.play().then(() => {
                     updatePlayPauseUI(false);
-                }).catch(e => console.log("Erro ao reproduzir o vídeo principal", e));
+                }).catch(e => console.log("Erro no arranque do filme principal", e));
 
                 toggleFullScreenMode(true);
             };
@@ -750,21 +876,19 @@
             const exitCinematicExperience = () => {
                 isPlayingCinema = false;
                 
-                // Pára o trailer se estiver a dar
                 if (isPlayingTrailer) {
                     trailerVideo.pause();
                     trailerContainer.classList.remove('active');
                     video.classList.remove('video-mini-popup');
                     isPlayingTrailer = false;
                 }
-                
+
+                hideFeedbackWidget();
                 toggleFullScreenMode(false);
 
-                // Esconde UI e Volta ao Menu
                 playerUI.classList.remove('active');
                 playerUI.classList.remove('ui-visible');
                 
-                // Restaura o formato de vídeo preenchendo a tela inteira (cover)
                 video.classList.remove('cinema-mode');
                 video.classList.add('preview-mode');
                 menuOverlay.classList.remove('hidden-element');
@@ -778,11 +902,11 @@
             });
 
             // ==========================================
-            // CONTROLOS DA INTERFACE PERSONALIZADA
+            // CONTROLES DA INTERFACE PERSONALIZADA
             // ==========================================
 
             const showUI = () => {
-                if(!isPlayingCinema || isPlayingTrailer) return; // Não mostra UI se o trailer estiver ativo
+                if(!isPlayingCinema || isPlayingTrailer) return; 
                 
                 playerUI.classList.add('ui-visible');
                 document.body.style.cursor = "default";
@@ -796,14 +920,11 @@
                 }, 3000);
             };
 
-            // Eventos para mostrar a interface de forma ágil e responsiva
             document.addEventListener('mousemove', showUI);
             document.addEventListener('touchstart', showUI);
             playerUI.addEventListener('mouseenter', showUI);
             
-            // Play / Pause
             const togglePlayPause = () => {
-                // Se o trailer estiver ativo, pausa/retoma ambos
                 if (isPlayingTrailer) {
                     if (trailerVideo.paused) {
                         trailerVideo.play();
@@ -838,7 +959,6 @@
             btnPlayPause.addEventListener('click', togglePlayPause);
             clickArea.addEventListener('click', togglePlayPause);
 
-            // Atualização de Tempo e Verificação do Trailer
             video.addEventListener('timeupdate', () => {
                 if (!isPlayingCinema) return;
                 
@@ -849,7 +969,7 @@
                     progressBar.style.width = `${progressPercent}%`;
                 }
 
-                // CHECK DO TRAILER: Minuto 91:07
+                // GATILHO TEMPORAL DO TRAILER: Minuto 85:19 (5119 segundos)
                 if (!trailerTriggered && video.currentTime >= TRAILER_TRIGGER_TIME) {
                     triggerTrailerEvent();
                 }
@@ -859,7 +979,6 @@
                 timeTotal.textContent = formatTime(video.duration);
             });
 
-            // Ajuste do progresso por clique/arrasto (compatível com mouse e touch)
             const handleScrub = (clientX) => {
                 const rect = progressContainer.getBoundingClientRect();
                 let pos = (clientX - rect.left) / rect.width;
@@ -888,7 +1007,6 @@
                 document.addEventListener('mouseup', onMouseUp);
             });
 
-            // Suporte para arraste nos dispositivos móveis
             progressContainer.addEventListener('touchstart', (e) => {
                 if(isPlayingTrailer) return;
                 wasPausedBeforeScrubbing = video.paused;
@@ -908,7 +1026,6 @@
                 document.addEventListener('touchend', onTouchEnd);
             });
 
-            // Controlo de Volume e Mute
             const updateVolumeUI = () => {
                 volFill.style.width = `${video.volume * 100}%`;
                 if (video.volume === 0 || video.muted) {
@@ -951,7 +1068,6 @@
                 document.addEventListener('mouseup', onMouseUp);
             });
 
-            // Ecrã Cheio (Fullscreen API)
             const toggleFullScreenMode = (forceEnter = null) => {
                 const isFull = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
                 const elem = document.documentElement;
@@ -991,7 +1107,7 @@
             document.addEventListener('fullscreenchange', handleFullscreenChange);
             document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 
-            // Atalhos de teclado
+            // Atalhos do teclado global
             document.addEventListener('keydown', (e) => {
                 if (!isPlayingCinema) return;
                 
@@ -1020,16 +1136,15 @@
                             showUI();
                         }
                         break;
-                    case 't': // ATALHO SECRETO PARA TESTAR O TRAILER IMEDIATAMENTE
+                    case 't': // ATALHO DE TESTE: DISPARA O TRAILER DE IMEDIATO
                         if (!isPlayingTrailer && isPlayingCinema) {
-                            console.log("Atalho Secreto Ativado: A iniciar o trailer!");
+                            console.log("Atalho de desenvolvedor ativado: Forçar início do trailer.");
                             triggerTrailerEvent();
                         }
                         break;
                 }
             });
 
-            // Inicialização de volumes corretos
             video.volume = 1;
             updateVolumeUI();
         });
