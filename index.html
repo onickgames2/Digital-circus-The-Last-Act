@@ -460,15 +460,15 @@
         <p id="error-message">Erro: O vídeo não pôde ser carregado.<br><span class="text-sm text-gray-500">O link expirou ou está inacessível.</span></p>
     </div>
 
-    <!-- Vídeo Principal (No menu inicial preenche tudo com cover. No player fica em 16:9 contido) -->
-    <video id="main-video" class="preview-mode" preload="auto" playsinline crossorigin="anonymous">
+    <!-- Vídeo Principal (Atributo crossorigin removido para evitar problemas de CORS com servidores externos) -->
+    <video id="main-video" class="preview-mode" preload="auto" playsinline>
         <source src="https://files.catbox.moe/4n976b.mp4" type="video/mp4">
         O seu navegador não suporta a tag de vídeo.
     </video>
 
-    <!-- Trailer de Pop-up (Preparado com imagem de capa fornecida pelo utilizador) -->
+    <!-- Trailer de Pop-up (Atributo crossorigin removido e otimizado com poster correto) -->
     <div id="trailer-container">
-        <video id="trailer-video" preload="auto" playsinline crossorigin="anonymous" poster="https://files.catbox.moe/wdzd5f.jpg">
+        <video id="trailer-video" preload="auto" playsinline poster="https://files.catbox.moe/wdzd5f.jpg">
             <source src="https://files.catbox.moe/391eip.mp4" type="video/mp4">
         </video>
         <div class="trailer-overlay-text">
