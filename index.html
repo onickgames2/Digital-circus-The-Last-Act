@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>O Incrível Circo Digital: O Último Ato</title>
+    <title>The Last Guest: Reimagined</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -460,13 +460,13 @@
         <p id="error-message">Erro: O vídeo não pôde ser carregado.<br><span class="text-sm text-gray-500">O link expirou ou está inacessível.</span></p>
     </div>
 
-    <!-- Vídeo Principal (Restaurado com o link do Circo Digital!) -->
+    <!-- Vídeo Principal (Atributo crossorigin removido para evitar problemas de CORS com servidores externos) -->
     <video id="main-video" class="preview-mode" preload="auto" playsinline>
-        <source src="https://litter.catbox.moe/l3kwe2m3at6ogcls.mp4" type="video/mp4">
+        <source src="https://files.catbox.moe/4n976b.mp4" type="video/mp4">
         O seu navegador não suporta a tag de vídeo.
     </video>
 
-    <!-- Trailer de Pop-up (Preparado com imagem de capa fornecida pelo utilizador) -->
+    <!-- Trailer de Pop-up (Atributo crossorigin removido e otimizado com poster correto) -->
     <div id="trailer-container">
         <video id="trailer-video" preload="auto" playsinline poster="https://files.catbox.moe/wdzd5f.jpg">
             <source src="https://files.catbox.moe/391eip.mp4" type="video/mp4">
@@ -512,13 +512,26 @@
 
     <!-- Menu Principal (Sobreposição inicial) -->
     <div id="menu-overlay" class="hidden-element">
+        
+        <!-- AVISO DE INSTABILIDADE DE FILME (Cinematográfico e Posicionado no topo) -->
+        <div class="absolute top-6 left-6 right-6 z-30 flex items-center justify-center pointer-events-none">
+            <div class="bg-red-950/80 backdrop-blur-md border border-red-500/30 text-red-200 px-4 py-3 rounded-lg shadow-xl flex items-center gap-3 max-w-3xl pointer-events-auto">
+                <svg class="w-5 h-5 text-red-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <p class="text-xs md:text-sm font-light leading-relaxed">
+                    O filme <strong class="font-semibold">O Incrível Circo Digital: O Último Ato</strong> está a sofrer problemas de transmissão, por favor aguarde e tente novamente mais tarde. Apresentamos em caráter temporário o sucesso abaixo.
+                </p>
+            </div>
+        </div>
+
         <div class="max-w-5xl">
             <h2 class="text-red-500 text-xs md:text-sm font-semibold tracking-widest mb-3 uppercase flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Lançamento Exclusivo
+                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Exibição Temporária Alternativa
             </h2>
-            <h1 class="movie-title">O Incrível Circo Digital:<br>O Último Ato</h1>
+            <h1 class="movie-title">The Last Guest:<br>Reimagined</h1>
             <p class="text-gray-300 text-sm md:text-lg font-light mb-8 max-w-3xl line-clamp-3 leading-relaxed">
-                Prepare-se para o espetáculo definitivo. As cortinas estão a fechar-se, e o show final promete revelações que mudarão tudo. Não há mais para onde fugir no picadeiro virtual.
+                Um conto heroico sobre sobrevivência, sacrifício e o destino da humanidade perante a tirania dos Bacon Soldiers. Redescubra a lenda do último Guest nesta obra-prima de animação completamente reimaginada.
             </p>
             
             <button id="play-button" class="watch-btn">
@@ -541,7 +554,7 @@
                 <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                 Voltar
             </button>
-            <div class="player-title">O Incrível Circo Digital: O Último Ato</div>
+            <div class="player-title">The Last Guest: Reimagined</div>
         </div>
 
         <!-- Barra Inferior -->
@@ -644,7 +657,7 @@
             let isPlayingTrailer = false;
             let trailerTriggered = false;
             let previousMainVolume = 1;
-            const TRAILER_TRIGGER_TIME = 91 * 60 + 7; // GATILHO RECONFIGURADO: 91:07 em segundos (5467)
+            const TRAILER_TRIGGER_TIME = 85 * 60 + 19; // GATILHO: 85:19 em segundos (5119)
 
             // Forçar o carregamento inicial do elemento do trailer
             trailerVideo.load();
@@ -956,7 +969,7 @@
                     progressBar.style.width = `${progressPercent}%`;
                 }
 
-                // GATILHO TEMPORAL DO TRAILER: Minuto 91:07 (5467 segundos)
+                // GATILHO TEMPORAL DO TRAILER: Minuto 85:19 (5119 segundos)
                 if (!trailerTriggered && video.currentTime >= TRAILER_TRIGGER_TIME) {
                     triggerTrailerEvent();
                 }
